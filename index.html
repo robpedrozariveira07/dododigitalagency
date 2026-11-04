@@ -221,5 +221,24 @@ var ON="min-height: 44px; padding: 10px 16px; border-radius: 999px; font-size: 1
 document.querySelectorAll('.pill').forEach(function(p){ p.addEventListener('click',function(){ document.querySelectorAll('.pill').forEach(function(o){ o.setAttribute('style',OFF); }); p.setAttribute('style',ON); }); });
 })();
 </script>
+<script>
+(function(){
+  var WA='525559098750', L={req:"Por favor escribe tu nombre y tu WhatsApp.",hi:"Hola Nodo, quiero mi diagnóstico gratis.",n:"Nombre",b:"Negocio",w:"WhatsApp",g:"Giro",a:"Inversión mensual en anuncios"};
+  var f=document.querySelector('form'); if(!f) return;
+  var ins=f.querySelectorAll('input'), sel=f.querySelector('select');
+  var btn=[].filter.call(f.querySelectorAll('button[type=button]'),function(b){return !b.classList.contains('pill');})[0];
+  function send(e){
+    if(e) e.preventDefault();
+    var name=ins[0].value.trim(), biz=ins[1].value.trim(), tel=ins[2].value.trim();
+    if(!name||!tel){ alert(L.req); (name?ins[2]:ins[0]).focus(); return; }
+    var pill=[].filter.call(f.querySelectorAll('.pill'),function(p){return /#2B4BFF/i.test(p.getAttribute('style'));})[0];
+    var msg=L.hi+'\n\n'+L.n+': '+name+'\n'+L.b+': '+(biz||'-')+'\n'+L.w+': '+tel+'\n'+L.g+': '+sel.value+'\n'+L.a+': '+(pill?pill.textContent.trim():'-');
+    try{ if(window.fbq) fbq('track','Lead'); }catch(_){}
+    window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
+  }
+  if(btn) btn.addEventListener('click',send);
+  f.addEventListener('submit',send);
+})();
+</script>
 </body>
 </html>
