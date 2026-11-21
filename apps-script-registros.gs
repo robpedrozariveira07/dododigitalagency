@@ -17,9 +17,9 @@ var WHATSAPP = '525559098750';
 // Una entrada por fecha. La llave es el texto exacto del selector de la web.
 // meet: link de Google Meet de esa sesión. inicio: fecha y hora en Ciudad de México.
 var CLASES = {
-  'Jueves 10 de diciembre, 7:00 pm': { meet: 'https://meet.google.com/sjx-ckcy-uxb', inicio: '2026-12-10T19:00:00-06:00' },
-  'Jueves 14 de enero, 7:00 pm':     { meet: 'https://meet.google.com/hsc-wpyp-ioe', inicio: '2027-01-14T19:00:00-06:00' },
-  'Jueves 21 de enero, 7:00 pm':     { meet: 'https://meet.google.com/uof-zvkh-nvc', inicio: '2027-01-21T19:00:00-06:00' }
+  'Jueves 14 de enero, 7:00 pm': { meet: 'https://meet.google.com/hsc-wpyp-ioe', inicio: '2027-01-14T19:00:00-06:00' },
+  'Jueves 21 de enero, 7:00 pm': { meet: 'https://meet.google.com/uof-zvkh-nvc', inicio: '2027-01-21T19:00:00-06:00' },
+  'Jueves 28 de enero, 7:00 pm': { meet: 'https://meet.google.com/sjx-ckcy-uxb', inicio: '2027-01-28T19:00:00-06:00' }
 };
 var DURACION_MIN = 90;
 var HEADERS = ['fecha_registro','evento','fecha','nombre','whatsapp','correo','giro','vende','acepto','origen',
@@ -174,7 +174,7 @@ function pruebaContacto() {
 function prueba() {
   doPost({ parameter: {
     fecha_registro: new Date().toISOString(), evento: 'clase-gratis',
-    fecha: 'Jueves 10 de diciembre, 7:00 pm', nombre: 'Prueba Nodo',
+    fecha: 'Jueves 14 de enero, 7:00 pm', nombre: 'Prueba Nodo',
     whatsapp: '+52 55 0000 0000', correo: Session.getActiveUser().getEmail()
   } });
 }
