@@ -256,6 +256,7 @@ fbq('init','4240206509446497');fbq('track','PageView');
     err.textContent='';
     var msg='Hola Nodo, quiero agendar una llamada.\n\nNombre: '+name+'\nNegocio: '+((d.get('biz')||'').trim()||'-')+'\nWhatsApp: '+tel+'\nGiro: '+d.get('giro')+'\nInversión en anuncios: '+(d.get('ads')||'-');
     try{if(window.fbq)fbq('track','Lead')}catch(_){}
+    try{var q=new URLSearchParams(location.search),b=new URLSearchParams({evento:'contacto-agencia',idioma:'es',fecha_registro:new Date().toISOString(),nombre:name,negocio:(d.get('biz')||'').trim(),whatsapp:tel,giro:d.get('giro')||'',inversion_ads:d.get('ads')||'',origen:document.referrer||'directo'});['utm_source','utm_medium','utm_campaign','utm_content'].forEach(function(k){if(q.get(k))b.append(k,q.get(k))});fetch('https://script.google.com/macros/s/AKfycbzb1kviGC9eRwgMCVo3C7-OcjynwaAhOqHtqWVZpLTj0tHl_JDL4LEVibP5fjY-T6KigQ/exec',{method:'POST',mode:'no-cors',body:b}).catch(function(){})}catch(_){}
     window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
   });
 })();

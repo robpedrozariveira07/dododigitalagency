@@ -28,6 +28,7 @@ var TITULO = 'Clase gratis · Tu negocio con Claude: recupera horas cada semana 
 
 function doPost(e) {
   var p = (e && e.parameter) || {};
+  if (p.evento === 'contacto-agencia') return guardarContacto(p);
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
@@ -50,6 +51,48 @@ function doPost(e) {
   }
   return ContentService.createTextOutput(JSON.stringify({ ok: true }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// Formulario "Hablemos de tu negocio" de la página principal de Nodo.
+// Guarda el contacto en la pestaña "Contacto agencia" y te avisa por correo.
+var HEADERS_CONTACTO = ['fecha_registro','idioma','nombre','negocio','whatsapp','giro','inversion_ads',
+  'origen','utm_source','utm_medium','utm_campaign','utm_content','estatus','notas'];
+var AVISAR_A = 'roberto@nododigitalagency.com';
+
+function guardarContacto(p) {
+  var lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    var ss = SpreadsheetApp.openById(SHEET_ID);
+    var sh = ss.getSheetByName('Contacto agencia');
+    if (!sh) {
+      sh = ss.insertSheet('Contacto agencia');
+      sh.getRange(1, 1, 1, HEADERS_CONTACTO.length).setValues([HEADERS_CONTACTO]).setFontWeight('bold').setBackground('#eef1ff');
+      sh.setFrozenRows(1);
+    }
+    sh.appendRow(HEADERS_CONTACTO.map(function (h) {
+      var v = p[h] || '';
+      if (h === 'whatsapp' && v) v = "'" + v;
+      if (h === 'estatus') v = 'Nuevo';
+      return v;
+    }));
+  } finally {
+    lock.releaseLock();
+  }
+  try {
+    var tel = String(p.whatsapp || '').replace(/[^0-9]/g, '');
+    var html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5">' +
+      '<p><b>Nuevo contacto desde nododigitalagency.com</b></p>' +
+      '<p>Nombre: ' + esc(p.nombre) + '<br>Negocio: ' + esc(p.negocio || '-') + '<br>WhatsApp: ' + esc(p.whatsapp) +
+      '<br>Giro: ' + esc(p.giro || '-') + '<br>Inversión en anuncios: ' + esc(p.inversion_ads || '-') +
+      '<br>Origen: ' + esc(p.utm_source || p.origen || 'directo') + '</p>' +
+      (tel ? '<p><a href="https://wa.me/' + tel + '">Escribirle por WhatsApp</a></p>' : '') + '</div>';
+    MailApp.sendEmail({ to: AVISAR_A, subject: 'Nuevo contacto Nodo: ' + (p.nombre || '') + (p.negocio ? ' · ' + p.negocio : ''),
+      htmlBody: html, name: 'Web Nodo' });
+  } catch (err) {
+    console.error('No se pudo avisar: ' + err);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
 }
 
 function enviarBienvenida(p) {
@@ -112,6 +155,11 @@ function configurar() {
   sh.setName('Registros');
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold').setBackground('#eef1ff');
   sh.setFrozenRows(1);
+}
+
+function pruebaContacto() {
+  guardarContacto({ fecha_registro: new Date().toISOString(), idioma: 'es', nombre: 'Prueba Contacto',
+    negocio: 'Negocio de prueba', whatsapp: '+52 55 0000 0000', giro: 'Otro', inversion_ads: 'Todavía no', origen: 'prueba' });
 }
 
 // Prueba: agrega una fila "Prueba" y te manda el correo a ti.
