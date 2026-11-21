@@ -2,7 +2,7 @@
 // Si SHEET_ENDPOINT tiene la URL de tu Apps Script, el registro se guarda en Google Sheets.
 // Si está vacío, el registro se manda por WhatsApp para que no se pierda ninguno.
 (function () {
-  var SHEET_ENDPOINT = '';
+  var SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzb1kviGC9eRwgMCVo3C7-OcjynwaAhOqHtqWVZpLTj0tHl_JDL4LEVibP5fjY-T6KigQ/exec';
   var WA = '525559098750';
 
   var menu = document.querySelector('.menu'), links = document.getElementById('links');
@@ -18,7 +18,8 @@
       e.preventDefault();
       var d = new FormData(f);
       var name = (d.get('nombre') || '').trim(), tel = (d.get('whatsapp') || '').trim(), mail = (d.get('correo') || '').trim();
-      if (!name || !tel) { err.textContent = 'Escribe tu nombre y tu WhatsApp: por ahí te mandamos el enlace de la clase.'; (name ? f.whatsapp : f.nombre).focus(); return; }
+      if (!name || !tel || !mail) { err.textContent = 'Escribe tu nombre, WhatsApp y correo: al correo te llega el link de la clase.'; (!name ? f.nombre : !tel ? f.whatsapp : f.correo).focus(); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { err.textContent = 'Revisa tu correo: parece que le falta algo.'; f.correo.focus(); return; }
       if (!f.acepto.checked) { err.textContent = 'Para registrarte necesitamos que aceptes el aviso de privacidad.'; f.acepto.focus(); return; }
       err.textContent = '';
       d.append('evento', f.getAttribute('data-registro'));
