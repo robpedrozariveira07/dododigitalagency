@@ -141,13 +141,15 @@ fbq('init','4240206509446497');fbq('track','PageView');
       <label>Nombre<input name="nombre" type="text" autocomplete="name" placeholder="Tu nombre" required></label>
       <label>WhatsApp<input name="whatsapp" type="tel" autocomplete="tel" placeholder="+52" required></label>
     </div>
-    <label>Elige tu fecha<select name="fecha"><option>Jueves 14 de enero, 7:00 pm</option><option>Jueves 21 de enero, 7:00 pm</option><option>Jueves 28 de enero, 7:00 pm</option></select></label>
+    <label>Elige tu fecha <span class="cupo" aria-live="polite"></span><select name="fecha"><option>Jueves 14 de enero, 7:00 pm</option><option>Jueves 21 de enero, 7:00 pm</option><option>Jueves 28 de enero, 7:00 pm</option></select></label>
     <label>Correo<input name="correo" type="email" autocomplete="email" placeholder="tu@correo.com" required></label>
     <div class="two">
       <label>Tu giro<select name="giro"><option>Estudio, academia o gimnasio</option><option>Clínica, spa o consultorio</option><option>Servicios profesionales</option><option>Comida o repostería</option><option>Tienda o ecommerce</option><option>Otro</option></select></label>
       <label>¿Ya vendes?<select name="vende"><option>Sí, tengo clientes</option><option>Estoy empezando</option><option>Todavía no vendo</option></select></label>
     </div>
-    <label class="check"><input type="checkbox" name="acepto" value="si"><span>Acepto el <a href="../privacidad/" target="_blank" rel="noopener">aviso de privacidad</a> y recibir el enlace y recordatorios de la clase por WhatsApp.</span></label>
+    <label>¿Qué es lo que más quieres lograr?<select name="objetivo"><option value="">Elige una opción</option><option>Ahorrar tiempo en tareas que repito</option><option>Vender más con anuncios</option><option>Que mi WhatsApp conteste y dé seguimiento solo</option><option>Ordenar mi negocio: cobranza y números</option><option>Aprender a usar la IA en general</option></select></label>
+    <label>Cuéntanos de tu negocio <span style="font-weight:400;color:var(--gray)">(opcional)</span><textarea name="comentario" rows="2" placeholder="Ej.: tengo un spa en Coyoacán y contesto todo yo"></textarea></label>
+    <label class="check"><input type="checkbox" name="acepto" value="si"><span>Acepto el <a href="../privacidad/" target="_blank" rel="noopener">aviso de privacidad</a> y recibir el enlace y recordatorios de la clase por correo y WhatsApp.</span></label>
     <p class="err" role="alert"></p>
     <button type="submit">Reservar mi lugar gratis</button>
   </div>
@@ -187,6 +189,6 @@ fbq('init','4240206509446497');fbq('track','PageView');
     </div>
   </div>
 </footer>
-<script src="../assets/registro.js?v=3"></script>
+<script src="../assets/registro.js?v=4"></script>
 </body>
 </html>

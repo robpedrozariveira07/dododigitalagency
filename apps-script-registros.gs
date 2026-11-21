@@ -9,6 +9,7 @@
 //     Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario > Implementar.
 //   Copia la URL que termina en /exec y pásasela a Claude.
 
+var CUPO = 60; // lugares por fecha de la clase gratis
 var SHEET_ID = '1kdahJSKvKiI3XX8HeKtJlb6ZknHQyFg9ypzQz21Z4YY';
 var REMITENTE = 'academy@nododigitalagency.com';
 var NOMBRE_REMITENTE = 'Nodo Academy';
@@ -22,8 +23,8 @@ var CLASES = {
   'Jueves 28 de enero, 7:00 pm': { meet: 'https://meet.google.com/sjx-ckcy-uxb', inicio: '2027-01-28T19:00:00-06:00' }
 };
 var DURACION_MIN = 90;
-var HEADERS = ['fecha_registro','evento','fecha','nombre','whatsapp','correo','giro','vende','acepto','origen',
-  'utm_source','utm_medium','utm_campaign','utm_content','asistio','compro','notas'];
+var HEADERS = ['fecha_registro','evento','fecha','nombre','whatsapp','correo','giro','vende','objetivo','comentario','acepto','origen',
+  'utm_source','utm_medium','utm_campaign','utm_content','estatus','asistio','compro','notas'];
 var TITULO = 'Clase gratis · Tu negocio con Claude: recupera horas cada semana y automatiza tus ventas';
 
 function doPost(e) {
@@ -35,6 +36,10 @@ function doPost(e) {
     var sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
     if (sheet.getLastColumn() === 0) configurar();
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    HEADERS.forEach(function (h) {
+      if (headers.indexOf(h) === -1) { headers.push(h); sheet.getRange(1, headers.length).setValue(h).setFontWeight('bold').setBackground('#eef1ff'); }
+    });
+    p.estatus = (conteo()[p.fecha] || 0) >= CUPO ? 'Lista de espera' : 'Registrado';
     var row = headers.map(function (h) {
       var v = p[h] || '';
       if (h === 'whatsapp' && v) v = "'" + v; // teléfono como texto
@@ -45,7 +50,8 @@ function doPost(e) {
     lock.releaseLock();
   }
   try {
-    if (p.correo) enviarBienvenida(p);
+    if (p.correo && p.estatus === 'Lista de espera') enviarEspera(p);
+    else if (p.correo) enviarBienvenida(p);
   } catch (err) {
     console.error('No se pudo mandar el correo: ' + err);
   }
@@ -101,6 +107,40 @@ function guardarContacto(p) {
     console.error('No se pudo avisar: ' + err);
   }
   return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// Lugares ocupados por fecha (sin contar lista de espera).
+function conteo() {
+  var sh = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
+  var n = sh.getLastRow();
+  if (n < 2) return {};
+  var heads = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+  var iF = heads.indexOf('fecha'), iE = heads.indexOf('estatus'), iN = heads.indexOf('nombre');
+  var rows = sh.getRange(2, 1, n - 1, heads.length).getValues(), c = {};
+  rows.forEach(function (r) {
+    if (iE !== -1 && r[iE] === 'Lista de espera') return;
+    if (iN !== -1 && /^prueba/i.test(String(r[iN]))) return;
+    c[r[iF]] = (c[r[iF]] || 0) + 1;
+  });
+  return c;
+}
+
+// La web consulta los lugares disponibles: GET ?cupo=1
+function doGet(e) {
+  return ContentService.createTextOutput(JSON.stringify({ cupo: CUPO, counts: conteo() }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function enviarEspera(p) {
+  var nombre = String(p.nombre || '').split(' ')[0] || 'Hola';
+  var html = '<div style="font-family:Arial,sans-serif;font-size:16px;line-height:1.55;color:#1d1d1f;max-width:560px">' +
+    '<p>Hola ' + esc(nombre) + ',</p><p>La clase del <b>' + esc(p.fecha) + '</b> se llenó justo antes de tu registro. ' +
+    'Te dejamos en lista de espera: si se libera un lugar te escribimos.</p>' +
+    '<p>Si prefieres asegurar tu lugar en otra fecha, contéstanos este correo o escríbenos por <a href="https://wa.me/' + WHATSAPP + '">WhatsApp</a> y te cambiamos.</p>' +
+    '<p>Saludos,<br>Roberto<br>Nodo Academy</p></div>';
+  var opciones = { htmlBody: html, name: NOMBRE_REMITENTE, replyTo: REMITENTE };
+  if (GmailApp.getAliases().indexOf(REMITENTE) !== -1) opciones.from = REMITENTE;
+  GmailApp.sendEmail(p.correo, nombre + ', estás en lista de espera para la clase gratis', textoPlano(html), opciones);
 }
 
 function enviarBienvenida(p) {

@@ -20,6 +20,9 @@
       var name = (d.get('nombre') || '').trim(), tel = (d.get('whatsapp') || '').trim(), mail = (d.get('correo') || '').trim();
       if (!name || !tel || !mail) { err.textContent = 'Escribe tu nombre, WhatsApp y correo: al correo te llega el link de la clase.'; (!name ? f.nombre : !tel ? f.whatsapp : f.correo).focus(); return; }
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)) { err.textContent = 'Revisa tu correo: parece que le falta algo.'; f.correo.focus(); return; }
+      if (f.objetivo && !d.get('objetivo')) { err.textContent = 'Cuéntanos qué quieres lograr; así preparamos la clase para ti.'; f.objetivo.focus(); return; }
+      var opt = f.fecha && f.fecha.options[f.fecha.selectedIndex];
+      if (opt && opt.disabled) { err.textContent = 'Esa fecha ya está llena. Elige otra.'; f.fecha.focus(); return; }
       if (!f.acepto.checked) { err.textContent = 'Para registrarte necesitamos que aceptes el aviso de privacidad.'; f.acepto.focus(); return; }
       err.textContent = '';
       d.append('evento', f.getAttribute('data-registro'));
@@ -78,4 +81,26 @@ document.querySelectorAll('a[data-pay]').forEach(function (a) {
   });
   var bk = f.querySelector('a[data-book]');
   if (bk) bk.addEventListener('click', function () { try { if (window.fbq) fbq('track', 'Schedule'); } catch (_) {} });
+})();
+
+// Cupo por fecha de la clase gratis: muestra lugares disponibles y bloquea fechas llenas.
+(function () {
+  var sels = document.querySelectorAll('form[data-registro] select[name=fecha]');
+  if (!sels.length) return;
+  var EP = 'https://script.google.com/macros/s/AKfycbzb1kviGC9eRwgMCVo3C7-OcjynwaAhOqHtqWVZpLTj0tHl_JDL4LEVibP5fjY-T6KigQ/exec';
+  fetch(EP + '?cupo=1').then(function (r) { return r.json(); }).then(function (j) {
+    if (!j || !j.cupo) return;
+    [].forEach.call(sels, function (sel) {
+      var first = -1;
+      [].forEach.call(sel.options, function (o, i) {
+        var base = o.getAttribute('data-base') || o.textContent; o.setAttribute('data-base', base); o.value = base;
+        var left = j.cupo - ((j.counts || {})[base] || 0);
+        if (left <= 0) { o.disabled = true; o.textContent = base + ' · Llena'; }
+        else { o.textContent = left <= 15 ? base + ' · Quedan ' + left : base; if (first < 0) first = i; }
+      });
+      if (sel.options[sel.selectedIndex].disabled && first >= 0) sel.selectedIndex = first;
+      var lab = sel.closest('label') && sel.closest('label').querySelector('.cupo');
+      if (lab) lab.textContent = '· cupo de ' + j.cupo + ' por fecha';
+    });
+  }).catch(function () {});
 })();
