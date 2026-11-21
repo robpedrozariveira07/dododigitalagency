@@ -274,3 +274,7 @@ img.portrait{width:100%;height:auto;object-fit:cover;border:0;padding:0}
 .hold .ctas{flex-wrap:wrap}
 .hold .btn.ghost{color:var(--ink)}
 .hold .btn.ghost:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}
+/* diagnóstico */
+textarea{width:100%;min-width:0;background:var(--bone);border:1px solid var(--line);border-radius:12px;padding:14px;font:inherit;font-size:16px;color:var(--ink);resize:vertical}
+form[data-diagnostico] .ok-book,form[data-diagnostico] .ok-class{display:none;flex-direction:column;gap:12px;align-items:flex-start}
+form.to-book .ok-book,form.to-class .ok-class{display:flex}

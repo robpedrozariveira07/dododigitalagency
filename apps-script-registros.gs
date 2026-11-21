@@ -55,8 +55,8 @@ function doPost(e) {
 
 // Formulario "Hablemos de tu negocio" de la página principal de Nodo.
 // Guarda el contacto en la pestaña "Contacto agencia" y te avisa por correo.
-var HEADERS_CONTACTO = ['fecha_registro','idioma','nombre','negocio','whatsapp','giro','inversion_ads',
-  'origen','utm_source','utm_medium','utm_campaign','utm_content','estatus','notas'];
+var HEADERS_CONTACTO = ['fecha_registro','formulario','idioma','nombre','negocio','whatsapp','correo','link','giro',
+  'ventas_mes','inversion_ads','problema','origen','utm_source','utm_medium','utm_campaign','utm_content','estatus','notas'];
 var AVISAR_A = 'roberto@nododigitalagency.com';
 
 function guardarContacto(p) {
@@ -70,7 +70,13 @@ function guardarContacto(p) {
       sh.getRange(1, 1, 1, HEADERS_CONTACTO.length).setValues([HEADERS_CONTACTO]).setFontWeight('bold').setBackground('#eef1ff');
       sh.setFrozenRows(1);
     }
-    sh.appendRow(HEADERS_CONTACTO.map(function (h) {
+    // Agrega al final las columnas nuevas que falten, sin mover las existentes.
+    var heads = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0];
+    HEADERS_CONTACTO.forEach(function (h) {
+      if (heads.indexOf(h) === -1) { heads.push(h); sh.getRange(1, heads.length).setValue(h).setFontWeight('bold').setBackground('#eef1ff'); }
+    });
+    if (!p.formulario) p.formulario = 'contacto';
+    sh.appendRow(heads.map(function (h) {
       var v = p[h] || '';
       if (h === 'whatsapp' && v) v = "'" + v;
       if (h === 'estatus') v = 'Nuevo';
@@ -83,11 +89,13 @@ function guardarContacto(p) {
     var tel = String(p.whatsapp || '').replace(/[^0-9]/g, '');
     var html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5">' +
       '<p><b>Nuevo contacto desde nododigitalagency.com</b></p>' +
-      '<p>Nombre: ' + esc(p.nombre) + '<br>Negocio: ' + esc(p.negocio || '-') + '<br>WhatsApp: ' + esc(p.whatsapp) +
-      '<br>Giro: ' + esc(p.giro || '-') + '<br>Inversión en anuncios: ' + esc(p.inversion_ads || '-') +
+      '<p>Formulario: ' + esc(p.formulario) + '<br>Nombre: ' + esc(p.nombre) + '<br>Negocio: ' + esc(p.negocio || '-') +
+      '<br>WhatsApp: ' + esc(p.whatsapp) + '<br>Correo: ' + esc(p.correo || '-') + '<br>Instagram/web: ' + esc(p.link || '-') +
+      '<br>Giro: ' + esc(p.giro || '-') + '<br>Ventas al mes: ' + esc(p.ventas_mes || '-') + '<br>Inversión en anuncios: ' + esc(p.inversion_ads || '-') +
+      '<br>Quiere resolver: ' + esc(p.problema || '-') +
       '<br>Origen: ' + esc(p.utm_source || p.origen || 'directo') + '</p>' +
       (tel ? '<p><a href="https://wa.me/' + tel + '">Escribirle por WhatsApp</a></p>' : '') + '</div>';
-    GmailApp.sendEmail(AVISAR_A, 'Nuevo contacto Nodo: ' + (p.nombre || '') + (p.negocio ? ' · ' + p.negocio : ''),
+    GmailApp.sendEmail(AVISAR_A, (p.formulario === 'diagnostico' ? 'Nuevo diagnóstico Nodo: ' : 'Nuevo contacto Nodo: ') + (p.nombre || '') + (p.negocio ? ' · ' + p.negocio : ''),
       textoPlano(html), { htmlBody: html, name: 'Web Nodo' });
   } catch (err) {
     console.error('No se pudo avisar: ' + err);
