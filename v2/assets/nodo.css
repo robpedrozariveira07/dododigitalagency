@@ -269,3 +269,5 @@ form.sent .done{display:flex}
   .tools th:nth-child(3),.tools td:nth-child(3){display:none}
 }
 @media (max-width:440px){.menu ~ .links:not(.open) .btn{display:none}.links.open .btn{display:inline-flex}}
+.portrait.brand{background:var(--ink);border:0;background-image:radial-gradient(#23262E 1.5px,transparent 1.5px);background-size:22px 22px}
+img.portrait{width:100%;height:auto;object-fit:cover;border:0;padding:0}
