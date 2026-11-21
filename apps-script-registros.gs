@@ -9,7 +9,7 @@
 //     Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario > Implementar.
 //   Copia la URL que termina en /exec y pásasela a Claude.
 
-var CUPO = 60; // lugares por fecha de la clase gratis
+var CUPO = 120; // lugares por fecha de la clase gratis
 var SHEET_ID = '1kdahJSKvKiI3XX8HeKtJlb6ZknHQyFg9ypzQz21Z4YY';
 var REMITENTE = 'academy@nododigitalagency.com';
 var NOMBRE_REMITENTE = 'Nodo Academy';
