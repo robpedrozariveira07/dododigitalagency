@@ -16,11 +16,13 @@ var WHATSAPP = '525559098750';
 // Una entrada por fecha. La llave es el texto exacto del selector de la web.
 // meet: link de Google Meet de esa sesión. inicio: fecha y hora en Ciudad de México.
 var CLASES = {
-  'Jueves 10 de diciembre, 7:00 pm': { meet: 'PENDIENTE', inicio: '2026-12-10T19:00:00-06:00' },
-  'Jueves 14 de enero, 7:00 pm':     { meet: 'PENDIENTE', inicio: '2027-01-14T19:00:00-06:00' },
-  'Jueves 21 de enero, 7:00 pm':     { meet: 'PENDIENTE', inicio: '2027-01-21T19:00:00-06:00' }
+  'Jueves 10 de diciembre, 7:00 pm': { meet: 'https://meet.google.com/sjx-ckcy-uxb', inicio: '2026-12-10T19:00:00-06:00' },
+  'Jueves 14 de enero, 7:00 pm':     { meet: 'https://meet.google.com/hsc-wpyp-ioe', inicio: '2027-01-14T19:00:00-06:00' },
+  'Jueves 21 de enero, 7:00 pm':     { meet: 'https://meet.google.com/uof-zvkh-nvc', inicio: '2027-01-21T19:00:00-06:00' }
 };
 var DURACION_MIN = 90;
+var HEADERS = ['fecha_registro','evento','fecha','nombre','whatsapp','correo','giro','vende','acepto','origen',
+  'utm_source','utm_medium','utm_campaign','utm_content','asistio','compro','notas'];
 var TITULO = 'Clase gratis · Tu negocio con Claude: recupera horas cada semana y automatiza tus ventas';
 
 function doPost(e) {
@@ -29,6 +31,7 @@ function doPost(e) {
   lock.waitLock(10000);
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    if (sheet.getLastColumn() === 0) configurar();
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     var row = headers.map(function (h) {
       var v = p[h] || '';
@@ -98,6 +101,16 @@ function esc(s) {
 
 function textoPlano(html) {
   return html.replace(/<br>/g, '\n').replace(/<\/p>|<\/li>/g, '\n').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&');
+}
+
+// Pone nombre a la hoja y los encabezados. Se corre sola la primera vez.
+function configurar() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  ss.rename('Nodo Academy · Registros clase gratis');
+  var sh = ss.getSheets()[0];
+  sh.setName('Registros');
+  sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]).setFontWeight('bold').setBackground('#eef1ff');
+  sh.setFrozenRows(1);
 }
 
 // Prueba: agrega una fila "Prueba" y te manda el correo a ti.
