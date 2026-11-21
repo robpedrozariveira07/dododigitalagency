@@ -9,6 +9,7 @@
 //     Ejecutar como: Yo · Quién tiene acceso: Cualquier usuario > Implementar.
 //   Copia la URL que termina en /exec y pásasela a Claude.
 
+var SHEET_ID = '1kdahJSKvKiI3XX8HeKtJlb6ZknHQyFg9ypzQz21Z4YY';
 var REMITENTE = 'academy@nododigitalagency.com';
 var NOMBRE_REMITENTE = 'Nodo Academy';
 var WHATSAPP = '525559098750';
@@ -30,7 +31,7 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    var sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
     if (sheet.getLastColumn() === 0) configurar();
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     var row = headers.map(function (h) {
@@ -105,7 +106,7 @@ function textoPlano(html) {
 
 // Pone nombre a la hoja y los encabezados. Se corre sola la primera vez.
 function configurar() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(SHEET_ID);
   ss.rename('Nodo Academy · Registros clase gratis');
   var sh = ss.getSheets()[0];
   sh.setName('Registros');
