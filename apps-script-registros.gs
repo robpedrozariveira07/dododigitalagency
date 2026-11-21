@@ -87,8 +87,8 @@ function guardarContacto(p) {
       '<br>Giro: ' + esc(p.giro || '-') + '<br>Inversión en anuncios: ' + esc(p.inversion_ads || '-') +
       '<br>Origen: ' + esc(p.utm_source || p.origen || 'directo') + '</p>' +
       (tel ? '<p><a href="https://wa.me/' + tel + '">Escribirle por WhatsApp</a></p>' : '') + '</div>';
-    MailApp.sendEmail({ to: AVISAR_A, subject: 'Nuevo contacto Nodo: ' + (p.nombre || '') + (p.negocio ? ' · ' + p.negocio : ''),
-      htmlBody: html, name: 'Web Nodo' });
+    GmailApp.sendEmail(AVISAR_A, 'Nuevo contacto Nodo: ' + (p.nombre || '') + (p.negocio ? ' · ' + p.negocio : ''),
+      textoPlano(html), { htmlBody: html, name: 'Web Nodo' });
   } catch (err) {
     console.error('No se pudo avisar: ' + err);
   }
