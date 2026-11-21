@@ -31,7 +31,7 @@
         fetch(SHEET_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(d) }).catch(function () {});
       } else {
         var msg = 'Hola Nodo, me quiero registrar a la clase gratis.\n\nNombre: ' + name + '\nWhatsApp: ' + tel +
-          '\nCorreo: ' + (mail || '-') + '\nGiro: ' + (d.get('giro') || '-') + '\n¿Ya vende?: ' + (d.get('vende') || '-');
+          '\nCorreo: ' + (mail || '-') + '\nGiro: ' + (d.get('giro') || '-') + '\n¿Ya vende?: ' + (d.get('vende') || '-') + '\nFecha: ' + (d.get('fecha') || '-');
         window.open('https://wa.me/' + WA + '?text=' + encodeURIComponent(msg), '_blank');
       }
       f.classList.add('sent');
