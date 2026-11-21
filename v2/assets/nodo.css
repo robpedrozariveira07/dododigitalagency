@@ -271,3 +271,6 @@ form.sent .done{display:flex}
 @media (max-width:440px){.menu ~ .links:not(.open) .btn{display:none}.links.open .btn{display:inline-flex}}
 .portrait.brand{background:var(--ink);border:0;background-image:radial-gradient(#23262E 1.5px,transparent 1.5px);background-size:22px 22px}
 img.portrait{width:100%;height:auto;object-fit:cover;border:0;padding:0}
+.hold .ctas{flex-wrap:wrap}
+.hold .btn.ghost{color:var(--ink)}
+.hold .btn.ghost:hover{background:var(--ink);color:var(--white);border-color:var(--ink)}

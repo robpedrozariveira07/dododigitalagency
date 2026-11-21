@@ -39,3 +39,10 @@
     });
   });
 })();
+
+// Botones de pago: avisan a Meta que alguien inició la compra.
+document.querySelectorAll('a[data-pay]').forEach(function (a) {
+  a.addEventListener('click', function () {
+    try { if (window.fbq) fbq('track', 'InitiateCheckout', { content_name: a.getAttribute('data-pay'), currency: 'MXN' }); } catch (_) {}
+  });
+});
